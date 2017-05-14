@@ -8,5 +8,5 @@
        "depends" : [ "" ],
        "source-url" : "git://github.com/cbk/API-USNavalObservatory",
        "license" : "Artistic-2.0",
-       "tags" :  "WIP"
+       "tags" :  ["WIP", "api"]
 }
