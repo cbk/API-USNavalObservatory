@@ -7,7 +7,7 @@ use v6.c;
 unit class API::USNavalObservatory;
 use JSON::Fast;
 use HTTP::UserAgent;
-has $!http-agent = HTTP::UserAgent.new;
+has $!http-agent = HTTP::UserAgent.new(useragent => "Chrome/41.0");
 has $baseUrl = 'api.usno.navy.mil';
 
 ###########################################
@@ -33,7 +33,16 @@ has $baseUrl = 'api.usno.navy.mil';
 
 ###########################################
 ## Selected Christian observances
-
+method observancesChristan( $year ) {
+  my $template = "christian?year={ $year }";
+  my $response = $webAgent.get( $baseURL ~ $template );
+  if $response.is-success {
+    return $response.content;
+    }
+    else {
+      return $response.status-line;
+  }
+}
 ###########################################
 ## Selected Jewish observances
 
