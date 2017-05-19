@@ -5,7 +5,7 @@
 ## Currently based on the 2.0.1 version of the API.
 use v6.c;
 unit class API::USNavalObservatory;
-use JSON::Fast;
+#use JSON::Fast;
 use HTTP::UserAgent;
 has $!http-agent = HTTP::UserAgent.new(useragent => "Chrome/41.0");
 has $baseUrl = 'api.usno.navy.mil';
