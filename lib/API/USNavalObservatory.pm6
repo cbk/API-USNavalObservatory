@@ -78,7 +78,6 @@ multi julianDate( $dateTimeObj, $era ) {
   my $date = "{ $dateTimeObj.month }/{ $dateTimeObj.day }/{ $dateTimeObj.year }";
   my $time = "{$dateTimeObj.hour}:{$dateTimeObj.minute}:{$dateTimeObj.second}";
   my $template = "jdconverter?date={ $date }&time={ $time }&era={ $era }";
-  say $baseURL ~ $template;
   my $response = $webAgent.get( self.baseURL ~ $template );
   if $response.is-success {
     return $response.content;
