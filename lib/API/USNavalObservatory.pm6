@@ -37,7 +37,7 @@ has @validEras = "AD", "CE", "BC", "BCE";
 method observancesChristan( UInt $year ) {
   if $year != any( 1583...9999 ) { return "ERROR!! Invalid year. (only use 1583 to 9999)"; }
   my $template = "christian?year={ $year }";
-  my $response = $webAgent.get( $baseURL ~ $template );
+  my $response = $webAgent.get( self.baseURL ~ $template );
   if $response.is-success {
     return $response.content;
     }
@@ -50,7 +50,7 @@ method observancesChristan( UInt $year ) {
 method observancesJewish( UInt $year ) {
   if $year != any( 622...9999 ) { return "ERROR!! Invalid year. (only use 622 to 9999)"; }
   my $template = "jewish?year={ $year }";
-  my $response = $webAgent.get( $baseURL ~ $template );
+  my $response = $webAgent.get( self.baseURL ~ $template );
   if $response.is-success {
     return $response.content;
     }
@@ -63,7 +63,7 @@ method observancesJewish( UInt $year ) {
 method observancesIslamic( UInt $year ) {
   if $year != any( 360...9999 ) { return "ERROR!! Invalid year. (only use 360 to 9999)"; }
   my $template = "islamic?year={ $year }";
-  my $response = $webAgent.get( $baseURL ~ $template );
+  my $response = $webAgent.get( self.baseURL ~ $template );
   if $response.is-success {
     return $response.content;
     }
@@ -78,7 +78,7 @@ multi julianDate( $dateTimeObj, $era ) {
   my $time = "{$dateTimeObj.hour}:{$dateTimeObj.minute}:{$dateTimeObj.second}";
   my $template = "jdconverter?date={ $date }&time={ $time }&era={ $era }";
   say $baseURL ~ $template;
-  my $response = $webAgent.get( $baseURL ~ $template );
+  my $response = $webAgent.get( self.baseURL ~ $template );
   if $response.is-success {
     return $response.content;
     }
@@ -90,7 +90,7 @@ multi julianDate( $dateTimeObj, $era ) {
 multi julianDate( $julian ) {
   if $julian < 0 or $julian > 5373484.5 { return "ERROR!! Julian date. (only use 0 to 5373484.5 )"; }
   my $template = "jdconverter?jd={ $julian }";
-  my $response = $webAgent.get( $baseURL ~ $template );
+  my $response = $webAgent.get( self.baseURL ~ $template );
   if $response.is-success {
     return $response.content;
     }

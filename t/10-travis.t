@@ -5,7 +5,7 @@ ok(1);
 
 if (%*ENV<TRAVIS>) {
     diag "Running test on travis";
-    my $ipObj = API::USNavalObservatory.new;
+    my $webAgent = API::USNavalObservatory.new;
+    say $webAgent.WHAT;
 }
-
 done-testing();
