@@ -7,9 +7,10 @@ use v6.c;
 unit class API::USNavalObservatory;
 #use JSON::Fast;
 use HTTP::UserAgent;
-has $!http-agent = HTTP::UserAgent.new(useragent => "Chrome/41.0");
+has $webAgent = HTTP::UserAgent.new(useragent => "Chrome/41.0");
 has $baseUrl = 'api.usno.navy.mil';
 has @validEras = "AD", "CE", "BC", "BCE";
+has $apiID = 'MDHTest';
 
 ###########################################
 ## Cylindrical Projection.
