@@ -2,9 +2,9 @@ language: perl6
 perl6:
   - latest
 install:
-  - rakudobrew build-panda
-  - panda --notests installdeps .
-  - panda-build
+  - rakudobrew build-zef
+  - zef --notests installdeps .
+  - zef-build
   # - panda --notest install LWP::Simple
 
 script:
