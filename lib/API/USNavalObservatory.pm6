@@ -74,11 +74,22 @@ method observancesIslamic( UInt $year ) {
 ###########################################
 ## Julian date converter
 multi julianDate( $dateTimeObj, $era ) {
-  my $APIDate-format = sub ($self) { sprintf "%02d/%02d/%04d", .month, .day, .year given $self; };
-  my $date = Date.new( $dateTimeObj.Date, formatter => $APIDate-format);
-  my $time = "{$dateTimeObj.hour}:{$dateTimeObj.minute}:{$dateTimeObj.second}{$dateTimeObj.timezone}";
+  my $date = "{ $dateTimeObj.month }/{ $dateTimeObj.day }/{ $dateTimeObj.year }";
+  my $time = "{$dateTimeObj.hour}:{$dateTimeObj.minute}:{$dateTimeObj.second}";
   my $template = "jdconverter?date={ $date }&time={ $time }&era={ $era }";
   say $baseURL ~ $template;
+  my $response = $webAgent.get( $baseURL ~ $template );
+  if $response.is-success {
+    return $response.content;
+    }
+    else {
+      return $response.status-line;
+  }
+}
+
+multi julianDate( $julian ) {
+  if $julian < 0 or $julian > 5373484.5 { return "ERROR!! Julian date. (only use 0 to 5373484.5 )"; }
+  my $template = "jdconverter?jd={ $julian }";
   my $response = $webAgent.get( $baseURL ~ $template );
   if $response.is-success {
     return $response.content;
