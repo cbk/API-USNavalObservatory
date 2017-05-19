@@ -2,11 +2,10 @@ language: perl6
 perl6:
   - latest
 install:
-  - rakudobrew build-zef
-  - zef --notests installdeps .
-  - zef-build
-  # - panda --notest install LWP::Simple
+  - rakudobrew build zef
+  - zef --depsonly install .
 
 script:
   - PERL6LIB=lib prove -e perl6 -vr t/
+
 sudo: false
