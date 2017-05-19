@@ -1,5 +1,5 @@
 use Test;
-API::USNavalObservatory
+use API::USNavalObservatory;
 
 ok(1);
 
