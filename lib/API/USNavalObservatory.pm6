@@ -17,7 +17,7 @@ subset solarEclipses-YEAR of UInt where * eq any(1800..2050);
 ###########################################
 ## getJSON - method used to make request which will reutrn JSON formatted data.
 method getJSON( $template ) {
-  my $response = $webAgent.get( $!baseURL ~ $template ~ "?ID={$apiID}" );
+  my $response = $webAgent.get( $!baseURL ~ $template ~ "&id={$apiID}" );
   if $response.is-success {
     return $response.content;
     }
