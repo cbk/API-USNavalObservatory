@@ -8,6 +8,7 @@ use v6.c;
 unit class API::USNavalObservatory;
 use HTTP::UserAgent;
 use URI::Encode;
+use WWW;
 has $!baseURL = 'api.usno.navy.mil/';
 has @!validEras = "AD", "CE", "BC", "BCE";
 has $apiID = 'P6mod';
@@ -25,7 +26,7 @@ subset Format of Str where * eq any( "json", "gojson" );
 subset MoonPhase of UInt where * eq any(1..99);
 
 ###########################################
-## getJSON - method used to make request which will reutrn JSON formatted data.
+## getJSON - method used to make request which will return JSON formatted data.
 method getJSON( $template ) {
   my $encoded_uri = uri_encode( $!baseURL ~ $template ~ "&id={ $apiID }" );
   my $response = $webAgent.get( $encoded_uri );
@@ -36,7 +37,15 @@ method getJSON( $template ) {
       return $response.status-line;
   }
 }
-
+###########################################
+## getIMG - method used to make request which will return .png files.
+method getIMG( :$name, :$template ){
+  my $file = $*CWD ~ "/"~ $name ~ ".png";
+  my $url = $!baseURL ~ $template;
+  say "Saving to '$file'...";
+  $file.IO.spurt: :bin, get $url;
+  say "{($file.path.s / 1024).fmt("%.1f")} KB received";
+}
 ###########################################
 ## Cylindrical Projection.
 
@@ -45,6 +54,12 @@ method getJSON( $template ) {
 
 ###########################################
 ## Apparent disk of a solar system object.
+method apparentDisk( DateTime :$dateTimeObj, Body :$body ){
+  my $date = "{ $dateTimeObj.month }/{ $dateTimeObj.day }/{ $dateTimeObj.year }";
+  my $time = "{$dateTimeObj.hour}:{$dateTimeObj.minute}:{$dateTimeObj.second}";
+  my $template = "imagery/{ $body }.png?date={ $date }&time={ $time }";
+  self.getIMG( :name( $body ), :template($template)  );
+}
 
 ###########################################
 ## Phases of the moon.
