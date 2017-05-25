@@ -15,7 +15,7 @@ has $apiID = 'P6mod';
 has $webAgent = HTTP::UserAgent.new();
 
 subset SolarEclipses-YEAR of UInt where * eq any(1800..2050);
-subset ValidEras of Str where * eq any("AD", "CE", "BC", "BCE");
+subset ValidEras of Str where * eq any( "AD", "CE", "BC", "BCE" );
 subset ValidJulian of UInt where * < 5373484.5;
 subset ObserChristan of UInt where * eq any( 1583..9999 );
 subset ObserJewish of UInt where * eq any( 622..9999 );
@@ -24,6 +24,7 @@ subset Body of Str where * eq any( "mercury", "venus", "venus-radar", "mars", "j
 subset Height of Int where * eq any (-90..10999);
 subset Format of Str where * eq any( "json", "gojson" );
 subset MoonPhase of UInt where * eq any(1..99);
+subset View of Str where * eq any( "moon", "sun", "north", "south", "east", "west", "rise", "set" );
 
 ###########################################
 ## getJSON - method used to make request which will return JSON formatted data.
