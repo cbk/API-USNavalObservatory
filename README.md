@@ -10,9 +10,15 @@ my $webAgent = API::NavalObservatory.new( apiID => "MyID" );
 
 ## Methods
 
+<<<<<<< HEAD
 #### Day and Night Across the Earth - Cylindrical Projection
 
 #### Day and Night Across the Earth - Spherical Projection
+=======
+#### Day and Night Across the Earth - Cylindrical Projectio
+
+### Day and Night Across the Earth - Spherical Projections
+>>>>>>> origin/master
 
 #### Apparent Disk of a Solar System Object
 
@@ -27,6 +33,11 @@ my $webAgent = API::NavalObservatory.new( apiID => "MyID" );
 #### Selected Christian Observances
 
 #### Selected Jewish Observances
+<<<<<<< HEAD
+=======
+
+#### Selected Islamic Observances
+>>>>>>> origin/master
 
 #### Selected Islamic Observances
 This data service provides the dates for Islamic New Year, the first day of Ramadân, and the first day of Shawwál in a given year.
