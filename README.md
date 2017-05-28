@@ -9,36 +9,33 @@ my $webAgent = API::NavalObservatory.new( apiID => "MyID" );
 
 
 ## Methods
-**Day and Night Across the Earth - Cylindrical Projection**
 
-**Day and Night Across the Earth - Spherical Projections**
+#### Day and Night Across the Earth - Cylindrical Projection
 
-**Apparent Disk of a Solar System Object**
+#### Day and Night Across the Earth - Spherical Projection
 
-**Phases of the Moon**
+#### Apparent Disk of a Solar System Object
 
-**Complete Sun and Moon Data for One Day**
+#### Phases of the Moon
 
-**Sidereal Time**
+#### Complete Sun and Moon Data for One Day
 
-**Solar Eclipse Calculator**
+#### Sidereal Time
 
-**Selected Christian Observances**
+#### Solar Eclipse Calculator
 
-**Selected Jewish Observances**
+#### Selected Christian Observances
 
-**Selected Islamic Observances**
+#### Selected Jewish Observances
 
+#### Selected Islamic Observances
 This data service provides the dates for Islamic New Year, the first day of Ramadân, and the first day of Shawwál in a given year.
 
 The `.observancesIslamic` method takes one argument called year, which should be a unsigned integer in the range of 622 to 9999.
-
-EXAMPLE:
-
+##### EXAMPLE:
 `my $request = $webAgent.observancesIslamic( :year(2017) );`
 
-**Julian Date Converter**
-
+#### Julian Date Converter
 This data service converts dates between the Julian/Gregorian calendar and Julian date. Data will be provided for the years 4713 B.C. through A.D. 9999, or Julian dates of 0 through 5373484.5. More information about this application may be found here.
 
 To use the `.julianDate` method, you must provide a valid `DateTime` object and a valid Era OR an unsigned integer.
@@ -46,11 +43,14 @@ To use the `.julianDate` method, you must provide a valid `DateTime` object and 
 This method returns a JSON text blob of the request converted into ether a Julian or calendar date.
 
 
-EXAMPLES:
+##### EXAMPLES:
 
 `my $request = $webAgent.julianDate( 2457892.312674 );`
 
 `my $request = $webAgent.julianDate( DateTime.now, 'AD');`
+##### Return:
+This method returns a JSON formatted text blob.
+
 
 ## Returns
 * For services which return text, you will receive an JSON formatted blob of text.
