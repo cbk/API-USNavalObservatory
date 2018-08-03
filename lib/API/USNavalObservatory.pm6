@@ -58,7 +58,7 @@ method dayAndNight-Cylindrical( DateTime :$dateTimeObj ) {
 ###########################################
 ## Spherical Projections.
 method dayAndNight-Spherical( Date :$dateObj, View :$view ) {
-  my $date = "{ $dateObj.month }/{ $dateObj.day }/{ $dateeObj.year }";
+  my $date = "{ $dateObj.month }/{ $dateObj.day }/{ $dateObj.year }";
   my $template = "imagery/earth.png?date={ $date }&view={ $view }";
   self!getIMG( :name( "earth" ), :template( $template ) );
 }
