@@ -74,9 +74,15 @@ method apparentDisk( DateTime :$dateTimeObj, Body :$body ){
 
 ###########################################
 ## Phases of the moon.
-method moonPhase( Date :$dateObj, MoonPhase :$numP  ){
+multi method moonPhase( Date :$dateObj, MoonPhase :$numP  ){
   my $date = "{ $dateObj.month }/{ $dateObj.day }/{ $dateObj.year }";
   my $template = "moon/phase?date={ $date }&nump={ $numP }";
+  return self!getJSON( $template );
+}
+
+multi method moonPhase( UInt :$year where * eq any( 1700 ..2100 )){
+  # 1700 and 2100 are the only valid years which can be used.
+  my $template = "moon/phase?year={ $year }";
   return self!getJSON( $template );
 }
 
