@@ -126,8 +126,8 @@ multi method solarEclipses( SolarEclipses-YEAR :$year ) {
 ###########################################
 ## Solar eclipses caculator
 ## TODO Get Location type working...
-multi method solarEclipses( DateTime :$dateObj, :$loc, Height :$height, Format :$format  ) {
-  my $date = "{ $dateObj.month }/{ $dateTime.day }/{ $dateTime.year }";
+multi method solarEclipses( Date :$dateObj, :$loc, Height :$height, Format :$format  ) {
+  my $date = "{ $dateObj.month }/{ $dateObj.day }/{ $dateObj.year }";
   my $template = "eclipses/solar?date={ $date }&loc={ $loc }&height={ $height }&format={ $format }";
   return self!getJSON( $template );
 }
@@ -135,8 +135,8 @@ multi method solarEclipses( DateTime :$dateObj, :$loc, Height :$height, Format :
 ###########################################
 ## Solar eclipses caculator
 # TODO get Coords type working...
-multi method solarEclipses( DateTime :$dateTimeObj, :$coords, Height :$height, Format :$format  ) {
-  my $date = "{ $dateTimeObj.month }/{ $dateTimeObj.day }/{ $dateTimeObj.year }";
+multi method solarEclipses( Date :$dateObj, :$coords, Height :$height, Format :$format  ) {
+  my $date = "{ $dateObj.month }/{ $dateObj.day }/{ $dateObj.year }";
   my $template = "eclipses/solar?date={ $date }&coords={ $coords }&height={ $height }&format={ $format }";
   return self!getJSON( $template );
 }
