@@ -2,11 +2,15 @@
 
 ## SYNOPSIS
 Simple Perl 6 interface to the U.S. Naval Observatory, Astronomical Applications API v2.0.1
-This is a work in progress is is by any means ready for use yet.  More to follow...
+which can be found at http://aa.usno.navy.mil/data/docs/api.php
 
-
+You may choose  to use an 8 character alphanumeric identifier in your forms or scripts.  This API has a default of 'P6mod' which is registered with the U.S. Naval Observatory as the default ID of this API.  The 'AA' ID is used internally by the U.S. Naval Observatory and thus can not be used.
+You may use any other identifier you want to ID
+#### EXAMPLE:
+the following example creates a new API::NavalObservatory object called $webAgent and sets the apiID to 'MyID'.
+```
 my $webAgent = API::NavalObservatory.new( apiID => "MyID" );
-
+```
 
 ## Methods
 
@@ -102,7 +106,7 @@ This method returns a JSON formatted text blob.
 
 
 ### Julian Date Converter
-This data service converts dates between the Julian/Gregorian calendar and Julian date. Data will be provided for the years 4713 B.C. through A.D. 9999, or Julian dates of 0 through 5373484.5. More information about this application may be found here.
+This data service converts dates between the Julian/Gregorian calendar and Julian date. Data will be provided for the years 4713 B.C. through A.D. 9999, or Julian dates of 0 through 5373484.5. 
 
 To use the `.julianDate` method, you must provide a valid `DateTime` object and a valid Era OR an unsigned integer.
 
@@ -116,8 +120,6 @@ This method returns a JSON text blob of the request converted into ether a Julia
 `my $request = $webAgent.julianDate( DateTime.now, 'AD');`
 #### Return:
 This method returns a JSON formatted text blob.
-
-
 
 
 ## Returns
