@@ -11,7 +11,8 @@ use URI::Encode;
 use WWW;
 has $!baseURL = 'api.usno.navy.mil/';
 has @!validEras = "AD", "CE", "BC", "BCE";
-has $apiID = 'P6mod';
+has $apiID = 'P6mod'; # Default ID, feel free to use an ID of your own and  override.
+has $outputDir = $*CWD; # Current working Dir is the default output dir for images
 has $webAgent = HTTP::UserAgent.new();
 
 subset SolarEclipses-YEAR of UInt where * eq any( 1800..2050 );
@@ -40,21 +41,34 @@ method !getJSON( $template ) {
 }
 ###########################################
 ## getIMG - method used to make request which will return .png files.
+## TODO: change the default location of the base direcotry
 method !getIMG( :$name, :$template ){
-  my $file = $*CWD ~ "/"~ $name ~ ".png";
+  my $file = $outputDir ~ "/"~ $name ~ ".png";
   my $url = $!baseURL ~ $template;
   say "Saving to $file ";
   $file.IO.spurt: :bin, get $url;
   say "{($file.path.s / 1024).fmt("%.1f")} KB received";
 }
+
 ###########################################
 ## Cylindrical Projection.
-method dayAndNight-Cylindrical( DateTime :$dateTimeObj ) {
+
+# querry with a date and time
+mulit method dayAndNight-Cylindrical( DateTime :$dateTimeObj ) {
   my $date = "{ $dateTimeObj.month }/{ $dateTimeObj.day }/{ $dateTimeObj.year }";
   my $time = "{$dateTimeObj.hour}:{$dateTimeObj.minute}";
   my $template = "imagery/earth.png?date={ $date }&time={ $time }";
   self.getIMG( :name( "earth" ), :template( $template ) );
 }
+
+# querry with date only
+mulit method dayAndNight-Cylindrical( Date :$dateObj ) {
+  my $date = "{ $dateObj.month }/{ $dateObj.day }/{ $dateObj.year }";
+  my $template = "imagery/earth.png?date={ $date }";
+  self.getIMG( :name( "earth" ), :template( $template ) );
+}
+
+
 ###########################################
 ## Spherical Projections.
 method dayAndNight-Spherical( Date :$dateObj, View :$view ) {
