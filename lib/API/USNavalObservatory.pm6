@@ -27,6 +27,9 @@ subset Format of Str where * eq any( "json", "gojson" );
 subset MoonPhase of UInt where * eq any( 1..99 );
 subset View of Str where * eq any( "moon", "sun", "north", "south", "east", "west", "rise", "set" );
 
+my regex coords { \-? \d+[\.\d+]? [N|S]? \,\s \-? \d+[\.\d+]? [E|W]? };
+my regex loc { ['St.' || <alpha> ]? \s? <alpha>+ \, \s \w**2 };
+
 ###########################################
 ## getJSON - method used to make request which will return JSON formatted data.
 method !getJSON( $template ) {
@@ -103,6 +106,10 @@ multi method moonPhase( UInt :$year where * eq any( 1700 ..2100 )){
 ###########################################
 ## Complete sun and mood data for one day by lat and long.
 multi method oneDayData-latlong( DateTime :$dateTimeObj, Str :$coords  ) {
+  try {
+    if $coords !~~ / <coords> / { die; }
+      CATCH { say 'Invalid coords passed!'; }
+  }
   my $date = "{ $dateTimeObj.month }/{ $dateTimeObj.day }/{ $dateTimeObj.year }";
   my $tz = $dateTimeObj.timezone / 3600;
   my $template = "rstt/oneday?date={ $date }&coords={ $coords }&tz={ $tz }";
@@ -112,6 +119,10 @@ multi method oneDayData-latlong( DateTime :$dateTimeObj, Str :$coords  ) {
 ###########################################
 ## Complete sun and mood data for one day by location.
 multi method oneDayData-location( Date :$dateObj, Str :$loc ) {
+  try {
+    if $loc !~~ / <loc> / { die; }
+    CATCH { say 'Invalid location passed!'; }
+  }
   my $date = "{ $dateObj.month }/{ $dateObj.day }/{ $dateObj.year }";
   my $template = "rstt/oneday?date={ $date }&loc={ $loc }";
   return self!getJSON( $template );
@@ -122,6 +133,10 @@ multi method oneDayData-location( Date :$dateObj, Str :$loc ) {
 ## TODO need to check if date is within 1 year past or 1 year in the future, range.
 ## TODO need to have some input checking for $intvUnit; can be 1 - 4 or a string.
 multi method siderealTime( DateTime :$dateTimeObj, Str :$loc, UInt :$reps, UInt :$intvMag, :$intvUnit ) {
+  try {
+    if $loc !~~ / <loc> / { die; }
+    CATCH { say 'Invalid location passed!'; }
+  }
   my $date = "{ $dateTimeObj.month }/{ $dateTimeObj.day }/{ $dateTimeObj.year }";
   my $time = "{$dateTimeObj.hour}:{$dateTimeObj.minute}:{$dateTimeObj.second}";
   my $template = "sidtime?date={ $date }&time={ $time }&loc={ $loc }&reps={ $reps }&intv_mag={ $intvMag }&intv_unit={ $intvUnit }";
@@ -156,11 +171,14 @@ multi method solarEclipses( Date :$dateObj, :$loc, Height :$height, Format :$for
 ## Solar eclipses caculator
 # TODO get Coords type working...
 multi method solarEclipses( Date :$dateObj, :$coords, Height :$height, Format :$format  ) {
+  try {
+    if $coords !~~ / <coords> / { die };
+      CATCH { say "Invalid coords passed!"; }
+  }
   my $date = "{ $dateObj.month }/{ $dateObj.day }/{ $dateObj.year }";
   my $template = "eclipses/solar?date={ $date }&coords={ $coords }&height={ $height }&format={ $format }";
   return self!getJSON( $template );
 }
-
 
 ###########################################
 ## Selected Christian observances
