@@ -130,21 +130,32 @@ multi method oneDayData-location( Date :$dateObj, Str :$loc ) {
 
 ###########################################
 ## Sideral Time
-## TODO need to check if date is within 1 year past or 1 year in the future, range.
-## TODO need to have some input checking for $intvUnit; can be 1 - 4 or a string.
+## TODO need to check if date is within 1 year past or 1 year in the future, range. DONE!!
+## TODO need to have some input checking for $intvUnit; can be 1 - 4 or a string. DONE!!
 multi method siderealTime( DateTime :$dateTimeObj, Str :$loc, UInt :$reps, UInt :$intvMag, :$intvUnit ) {
-  try {
-    if $loc !~~ / <loc> / { die; }
-    CATCH { say 'Invalid location passed!'; }
+
+try {
+    if $loc !~~ / <loc> / { die; } ## Check if the location value matches a valid pattern.
+    if $dateTimeObj < $today.later(year => -1) || $today.later(year => 1)  { die; }
+    if $intvUnit !~~ /[1..4] | ['day' | 'hour' | 'minuet' | 'second'] /  { die; }
+    CATCH { say 'Invalid data passed!'; }
   }
+
   my $date = "{ $dateTimeObj.month }/{ $dateTimeObj.day }/{ $dateTimeObj.year }";
   my $time = "{$dateTimeObj.hour}:{$dateTimeObj.minute}:{$dateTimeObj.second}";
+
   my $template = "sidtime?date={ $date }&time={ $time }&loc={ $loc }&reps={ $reps }&intv_mag={ $intvMag }&intv_unit={ $intvUnit }";
   return self!getJSON( $template );
 }
 
 ## TODO need to have some input checking for coords, and intvUnit.
 multi method siderealTime( DateTime :$dateTimeObj, :$coords, UInt :$reps, UInt :$intvMag, :$intvUnit ) {
+  try {
+      if $coords !~~ / <coords> / { die; }  
+      if $dateTimeObj < $today.later(year => -1) || $today.later(year => 1)  { die; }
+      if $intvUnit !~~ /[1..4] | ['day' | 'hour' | 'minuet' | 'second'] /  { die; }
+      CATCH { say 'Invalid data passed!'; }
+  }
   my $date = "{ $dateTimeObj.month }/{ $dateTimeObj.day }/{ $dateTimeObj.year }";
   my $time = "{$dateTimeObj.hour}:{$dateTimeObj.minute}:{$dateTimeObj.second}";
   my $template = "sidtime?date={ $date }&time={ $time }&coords={ $coords }&reps={ $reps }&intv_mag={ $intvMag }&intv_unit={ $intvUnit }";
