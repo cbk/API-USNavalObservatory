@@ -47,7 +47,21 @@ This method returns a JSON formatted text blob.
 This method returns a JSON formatted text blob.
 
 ### Sidereal Time
+Provides the greenwich mean and apparent sidereal time, local mean and apparent sidereal time, and the Equation of the Equinoxes for a given date & time.
+
+
 #### EXAMPLE:
+
+```
+my $request = $webAgent.siderealTime(
+	:dateTimeObj($dateTimeData),
+	:coords('41.98N, 12.48E'),
+	:reps(90),
+	:intvMag(5),
+	:intvMag('minutes')
+);
+```
+
 #### Return:
 This method returns a JSON formatted text blob.
 
@@ -106,7 +120,7 @@ This method returns a JSON formatted text blob.
 
 
 ### Julian Date Converter
-This data service converts dates between the Julian/Gregorian calendar and Julian date. Data will be provided for the years 4713 B.C. through A.D. 9999, or Julian dates of 0 through 5373484.5. 
+This data service converts dates between the Julian/Gregorian calendar and Julian date. Data will be provided for the years 4713 B.C. through A.D. 9999, or Julian dates of 0 through 5373484.5.
 
 To use the `.julianDate` method, you must provide a valid `DateTime` object and a valid Era OR an unsigned integer.
 
