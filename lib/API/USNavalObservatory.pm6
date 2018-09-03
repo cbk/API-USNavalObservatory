@@ -136,7 +136,7 @@ multi method siderealTime( DateTime :$dateTimeObj, Str :$loc, UInt :$reps, UInt 
 
 try {
     if $loc !~~ / <loc> / { die; } ## Check if the location value matches a valid pattern.
-    if $dateTimeObj < $today.later(year => -1) || $today.later(year => 1)  { die; }
+    if $dateTimeObj < $today.later(year => -1) or $dateTimeObj > $today.later(year => 1)  { die; }
     if $intvUnit !~~ /[1..4] | ['day' | 'hour' | 'minuet' | 'second'] /  { die; }
     CATCH { say 'Invalid data passed!'; }
   }
@@ -151,11 +151,12 @@ try {
 ## TODO need to have some input checking for coords, and intvUnit.
 multi method siderealTime( DateTime :$dateTimeObj, :$coords, UInt :$reps, UInt :$intvMag, :$intvUnit ) {
   try {
-      if $coords !~~ / <coords> / { die; }  
-      if $dateTimeObj < $today.later(year => -1) || $today.later(year => 1)  { die; }
+      if $coords !~~ / <coords> / { die; }
+      if $dateTimeObj < $today.later(year => -1) or $dateTimeObj > $today.later(year => 1)  { die; }
       if $intvUnit !~~ /[1..4] | ['day' | 'hour' | 'minuet' | 'second'] /  { die; }
       CATCH { say 'Invalid data passed!'; }
   }
+
   my $date = "{ $dateTimeObj.month }/{ $dateTimeObj.day }/{ $dateTimeObj.year }";
   my $time = "{$dateTimeObj.hour}:{$dateTimeObj.minute}:{$dateTimeObj.second}";
   my $template = "sidtime?date={ $date }&time={ $time }&coords={ $coords }&reps={ $reps }&intv_mag={ $intvMag }&intv_unit={ $intvUnit }";
