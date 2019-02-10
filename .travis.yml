@@ -6,5 +6,6 @@ services:
 install:
   - docker pull jjmerelo/test-perl6
   - docker images
-
+  - docker run -t -v  --entrypoint="/bin/sh" jjmerelo/test-perl6  -c apk add openssl-dev
+  
 script: docker run -t -v  $TRAVIS_BUILD_DIR:/test jjmerelo/test-perl6
