@@ -44,7 +44,7 @@ method !getJSON( $template ) {
 }
 ###########################################
 ## getIMG - method used to make request which will return .png files.
-## TODO: change the default location of the base direcotry
+## TODO: change the default location of the base directory
 method !getIMG( :$name, :$template ){
   my $file = $outputDir ~ "/"~ $name ~ ".png";
   my $url = $!baseURL ~ $template;
@@ -56,7 +56,7 @@ method !getIMG( :$name, :$template ){
 ###########################################
 ## Cylindrical Projection.
 
-# querry with a date and time
+# query with a date and time
 mulit method dayAndNight-Cylindrical( DateTime :$dateTimeObj ) {
   my $date = "{ $dateTimeObj.month }/{ $dateTimeObj.day }/{ $dateTimeObj.year }";
   my $time = "{$dateTimeObj.hour}:{$dateTimeObj.minute}";
@@ -64,7 +64,7 @@ mulit method dayAndNight-Cylindrical( DateTime :$dateTimeObj ) {
   self.getIMG( :name( "earth" ), :template( $template ) );
 }
 
-# querry with date only
+# query with date only
 mulit method dayAndNight-Cylindrical( Date :$dateObj ) {
   my $date = "{ $dateObj.month }/{ $dateObj.day }/{ $dateObj.year }";
   my $template = "imagery/earth.png?date={ $date }";
@@ -164,14 +164,14 @@ multi method siderealTime( DateTime :$dateTimeObj, :$coords, UInt :$reps, UInt :
 }
 
 ###########################################
-## Solar eclipses caculator
+## Solar eclipses calculator
 multi method solarEclipses( SolarEclipses-YEAR :$year ) {
   my $template = "eclipses/solar?year={ $year }";
   return self!getJSON( $template );
 }
 
 ###########################################
-## Solar eclipses caculator
+## Solar eclipses calculator
 ## TODO Get Location type working...
 multi method solarEclipses( Date :$dateObj, :$loc, Height :$height, Format :$format  ) {
   my $date = "{ $dateObj.month }/{ $dateObj.day }/{ $dateObj.year }";
@@ -180,7 +180,7 @@ multi method solarEclipses( Date :$dateObj, :$loc, Height :$height, Format :$for
 }
 
 ###########################################
-## Solar eclipses caculator
+## Solar eclipses calculator
 # TODO get Coords type working...
 multi method solarEclipses( Date :$dateObj, :$coords, Height :$height, Format :$format  ) {
   try {
