@@ -137,7 +137,7 @@ multi method siderealTime( DateTime :$dateTimeObj, Str :$loc, UInt :$reps, UInt 
 
 try {
     if $loc !~~ / <loc> / { die; } ## Check if the location value matches a valid pattern.
-    if $dateTimeObj < $dateTimeObj.later(year => -1) or $dateTimeObj > $dateTimeObj.later(year => 1)  { die; }
+    if $dateTimeObj < Date.today.later(year => -1) or $dateTimeObj > Date.today.later(year => 1)  { die; }
     if $intvUnit !~~ /[1..4] | ['day' | 'hour' | 'minuet' | 'second'] /  { die; }
     CATCH { say 'Invalid data passed!'; }
   }
@@ -153,7 +153,7 @@ try {
 multi method siderealTime( DateTime :$dateTimeObj, :$coords, UInt :$reps, UInt :$intvMag, :$intvUnit ) {
   try {
       if $coords !~~ / <coords> / { die; }
-      if $dateTimeObj < $dateTimeObj.later(year => -1) or $dateTimeObj > $dateTimeObj.later(year => 1)  { die; }
+      if $dateTimeObj < Date.today.later(year => -1) or $dateTimeObj > Date.today.later(year => 1)  { die; }
       if $intvUnit !~~ /[1..4] | ['day' | 'hour' | 'minuet' | 'second'] /  { die; }
       CATCH { say 'Invalid data passed!'; }
   }
