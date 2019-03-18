@@ -11,7 +11,7 @@ use URI::Encode;
 use WWW;
 
 my $baseURL = 'api.usno.navy.mil/';
-## Dont thing I need this ether: my @validEras = "AD", "CE", "BC", "BCE";
+## Dont think I need this ether: my @validEras = "AD", "CE", "BC", "BCE";
 my $apiID = 'P6mod'; # Default ID, feel free to use an ID of your own and  override.
 my $outputDir = $*CWD; # Current working Dir is the default output dir for images
 my $webAgent = HTTP::UserAgent.new();
