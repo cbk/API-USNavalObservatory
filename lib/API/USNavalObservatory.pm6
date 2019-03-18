@@ -13,7 +13,8 @@ has $!baseURL = 'api.usno.navy.mil/';
 has @!validEras = "AD", "CE", "BC", "BCE";
 has $apiID = 'P6mod'; # Default ID, feel free to use an ID of your own and  override.
 has $outputDir = $*CWD; # Current working Dir is the default output dir for images
-has $webAgent = HTTP::UserAgent.new();
+my $webAgent = HTTP::UserAgent.new();
+my $encoded = URI::Encode.new();
 
 subset SolarEclipses-YEAR of UInt where * eq any( 1800..2050 );
 subset ValidEras of Str where * eq any( "AD", "CE", "BC", "BCE" );
@@ -33,7 +34,7 @@ my regex loc { ['St.' || <alpha> ]? \s? <alpha>+ \, \s \w**2 };
 ###########################################
 ## getJSON - method used to make request which will return JSON formatted data.
 method !getJSON( $template ) {
-  my $encoded_uri = uri_encode( $!baseURL ~ $template ~ "&id={ $apiID }" );
+  my $encoded_uri = $encoded.uri_encode( $!baseURL ~ $template ~ "&id={ $apiID }" );
   my $response = $webAgent.get( $encoded_uri );
   if $response.is-success {
     return $response.content;
@@ -44,7 +45,7 @@ method !getJSON( $template ) {
 }
 ###########################################
 ## getIMG - method used to make request which will return .png files.
-## TODO: change the default location of the base direcotry
+## TODO: change the default location of the base directory
 method !getIMG( :$name, :$template ){
   my $file = $outputDir ~ "/"~ $name ~ ".png";
   my $url = $!baseURL ~ $template;
@@ -134,12 +135,14 @@ multi method oneDayData-location( Date :$dateObj, Str :$loc ) {
 ## TODO need to have some input checking for $intvUnit; can be 1 - 4 or a string. DONE!!
 multi method siderealTime( DateTime :$dateTimeObj, Str :$loc, UInt :$reps, UInt :$intvMag, :$intvUnit ) {
 
+
     try {
         if $loc !~~ / <loc> / { die; } ## Check if the location value matches a valid pattern.
         if $dateTimeObj < Date.today.later(year => -1) or $dateTimeObj > Date.today.later(year => 1)  { die; }
         if $intvUnit !~~ /[1..4] | ['day' | 'hour' | 'minuet' | 'second'] /  { die; }
         CATCH { say 'Invalid data passed!'; }
     }
+
 
     my $date = "{ $dateTimeObj.month }/{ $dateTimeObj.day }/{ $dateTimeObj.year }";
     my $time = "{$dateTimeObj.hour}:{$dateTimeObj.minute}:{$dateTimeObj.second}";
@@ -164,14 +167,14 @@ multi method siderealTime( DateTime :$dateTimeObj, :$coords, UInt :$reps, UInt :
 }
 
 ###########################################
-## Solar eclipses caculator
+## Solar eclipses calculator
 multi method solarEclipses( SolarEclipses-YEAR :$year ) {
   my $template = "eclipses/solar?year={ $year }";
   return self!getJSON( $template );
 }
 
 ###########################################
-## Solar eclipses caculator
+## Solar eclipses calculator
 ## TODO Get Location type working...
 multi method solarEclipses( Date :$dateObj, :$loc, Height :$height, Format :$format  ) {
   my $date = "{ $dateObj.month }/{ $dateObj.day }/{ $dateObj.year }";
@@ -180,7 +183,7 @@ multi method solarEclipses( Date :$dateObj, :$loc, Height :$height, Format :$for
 }
 
 ###########################################
-## Solar eclipses caculator
+## Solar eclipses calculator
 # TODO get Coords type working...
 multi method solarEclipses( Date :$dateObj, :$coords, Height :$height, Format :$format  ) {
   try {
