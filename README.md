@@ -9,7 +9,7 @@ You may use any other identifier you want to ID
 #### EXAMPLE:
 the following example creates a new API::NavalObservatory object called $webAgent and sets the apiID to 'MyID'.
 ```
-my $webAgent = API::NavalObservatory.new( apiID => "MyID" );
+my $webAgent = API::USNavalObservatory.new( apiID => "MyID" );
 ```
 
 ## Methods
