@@ -35,7 +35,7 @@ my regex loc { ['St.' || <alpha> ]? \s? <alpha>+ \, \s \w**2 };
 ###########################################
 ## getJSON - method used to make request which will return JSON formatted data.
 method !getJSON( $template ) {
-  my $URI = uri_encode( $!baseURL ~ $template ~ "&id={ $apiID }" );
+  my $URI = uri_encode( $baseURL ~ $template ~ "&id={ $apiID }" );
   my $response = $webAgent.get( $URI );
   if $response.is-success {
     return $response.content;
