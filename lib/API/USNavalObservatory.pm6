@@ -10,8 +10,8 @@ use HTTP::UserAgent;
 use URI::Encode;
 use WWW;
 
-my $!baseURL = 'api.usno.navy.mil/';
-my @!validEras = "AD", "CE", "BC", "BCE";
+my $baseURL = 'api.usno.navy.mil/';
+## Dont thing I need this ether: my @validEras = "AD", "CE", "BC", "BCE";
 my $apiID = 'P6mod'; # Default ID, feel free to use an ID of your own and  override.
 my $outputDir = $*CWD; # Current working Dir is the default output dir for images
 my $webAgent = HTTP::UserAgent.new();
@@ -49,7 +49,7 @@ method !getJSON( $template ) {
 ## TODO: change the default location of the base directory
 method !getIMG( :$name, :$template ){
   my $file = $outputDir ~ "/"~ $name ~ ".png";
-  my $url = $!baseURL ~ $template;
+  my $url = $baseURL ~ $template;
   say "Saving to $file ";
   $file.IO.spurt: :bin, get $url;
   say "{($file.path.s / 1024).fmt("%.1f")} KB received";
