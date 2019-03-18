@@ -15,7 +15,7 @@ my @!validEras = "AD", "CE", "BC", "BCE";
 my $apiID = 'P6mod'; # Default ID, feel free to use an ID of your own and  override.
 my $outputDir = $*CWD; # Current working Dir is the default output dir for images
 my $webAgent = HTTP::UserAgent.new();
-my $encoded = URI::Encode.new();
+## Removing this because I don't think I need it, but will keep it around for now: my $encoded = URI::Encode.new();
 
 subset SolarEclipses-YEAR of UInt where * eq any( 1800..2050 );
 subset ValidEras of Str where * eq any( "AD", "CE", "BC", "BCE" );
@@ -35,8 +35,8 @@ my regex loc { ['St.' || <alpha> ]? \s? <alpha>+ \, \s \w**2 };
 ###########################################
 ## getJSON - method used to make request which will return JSON formatted data.
 method !getJSON( $template ) {
-  my $encoded_uri = $encoded.uri_encode( $!baseURL ~ $template ~ "&id={ $apiID }" );
-  my $response = $webAgent.get( $encoded_uri );
+  my $URI = uri_encode( $!baseURL ~ $template ~ "&id={ $apiID }" );
+  my $response = $webAgent.get( $URI );
   if $response.is-success {
     return $response.content;
     }
