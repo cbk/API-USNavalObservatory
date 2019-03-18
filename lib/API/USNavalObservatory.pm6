@@ -3,16 +3,17 @@
 ## May 13, 2017
 ## Perl 6 module use to easily interface with the U.S. Naval Observatory's Astronomical Applications API.
 ## Currently based on the 2.0.1 version of the API.
-use v6.c;
+use v6;
 
 unit class API::USNavalObservatory;
 use HTTP::UserAgent;
 use URI::Encode;
 use WWW;
-has $!baseURL = 'api.usno.navy.mil/';
-has @!validEras = "AD", "CE", "BC", "BCE";
-has $apiID = 'P6mod'; # Default ID, feel free to use an ID of your own and  override.
-has $outputDir = $*CWD; # Current working Dir is the default output dir for images
+
+my $!baseURL = 'api.usno.navy.mil/';
+my @!validEras = "AD", "CE", "BC", "BCE";
+my $apiID = 'P6mod'; # Default ID, feel free to use an ID of your own and  override.
+my $outputDir = $*CWD; # Current working Dir is the default output dir for images
 my $webAgent = HTTP::UserAgent.new();
 my $encoded = URI::Encode.new();
 
