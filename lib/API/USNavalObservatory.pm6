@@ -3,18 +3,19 @@
 ## May 13, 2017
 ## Perl 6 module use to easily interface with the U.S. Naval Observatory's Astronomical Applications API.
 ## Currently based on the 2.0.1 version of the API.
-use v6.c;
+use v6;
 
 unit class API::USNavalObservatory;
 use HTTP::UserAgent;
 use URI::Encode;
 use WWW;
-has $!baseURL = 'api.usno.navy.mil/';
-has @!validEras = "AD", "CE", "BC", "BCE";
-has $apiID = 'P6mod'; # Default ID, feel free to use an ID of your own and  override.
-has $outputDir = $*CWD; # Current working Dir is the default output dir for images
+
+my $baseURL = 'api.usno.navy.mil/';
+## Dont think I need this ether: my @validEras = "AD", "CE", "BC", "BCE";
+my $apiID = 'P6mod'; # Default ID, feel free to use an ID of your own and  override.
+my $outputDir = $*CWD; # Current working Dir is the default output dir for images
 my $webAgent = HTTP::UserAgent.new();
-my $encoded = URI::Encode.new();
+## Removing this because I don't think I need it, but will keep it around for now: my $encoded = URI::Encode.new();
 
 subset SolarEclipses-YEAR of UInt where * eq any( 1800..2050 );
 subset ValidEras of Str where * eq any( "AD", "CE", "BC", "BCE" );
@@ -34,8 +35,8 @@ my regex loc { ['St.' || <alpha> ]? \s? <alpha>+ \, \s \w**2 };
 ###########################################
 ## getJSON - method used to make request which will return JSON formatted data.
 method !getJSON( $template ) {
-  my $encoded_uri = $encoded.uri_encode( $!baseURL ~ $template ~ "&id={ $apiID }" );
-  my $response = $webAgent.get( $encoded_uri );
+  my $URI = uri_encode( $baseURL ~ $template ~ "&id={ $apiID }" );
+  my $response = $webAgent.get( $URI );
   if $response.is-success {
     return $response.content;
     }
@@ -48,7 +49,7 @@ method !getJSON( $template ) {
 ## TODO: change the default location of the base directory
 method !getIMG( :$name, :$template ){
   my $file = $outputDir ~ "/"~ $name ~ ".png";
-  my $url = $!baseURL ~ $template;
+  my $url = $baseURL ~ $template;
   say "Saving to $file ";
   $file.IO.spurt: :bin, get $url;
   say "{($file.path.s / 1024).fmt("%.1f")} KB received";
@@ -134,8 +135,6 @@ multi method oneDayData-location( Date :$dateObj, Str :$loc ) {
 ## TODO need to check if date is within 1 year past or 1 year in the future, range. DONE!!
 ## TODO need to have some input checking for $intvUnit; can be 1 - 4 or a string. DONE!!
 multi method siderealTime( DateTime :$dateTimeObj, Str :$loc, UInt :$reps, UInt :$intvMag, :$intvUnit ) {
-
-
     try {
         if $loc !~~ / <loc> / { die; } ## Check if the location value matches a valid pattern.
         if $dateTimeObj < Date.today.later(year => -1) or $dateTimeObj > Date.today.later(year => 1)  { die; }
