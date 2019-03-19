@@ -69,12 +69,12 @@ This method returns a JSON formatted text blob.
 This data service provides local circumstances for solar eclipses, and also provides a means for determining dates and types of eclipses in a given year.
 
 #### EXAMPLE:
-The following example shows a request using a U.S. based location.
+The following example shows a request using a U.S. based location (San Francisco CA) for the current day.
 
 ```
-my $request = $webAgent.solarEclipses(
-	:loc("San Francisco, CA"),
-	:dateTimeObj($dateTimeData),
+say $webAgent.solarEclipses(
+	:loc("San Francisco CA"),
+	:dateObj( Date.today() ),
 	:height(50),
 	:format("json") );
 ```
@@ -95,7 +95,8 @@ This method returns a JSON formatted text blob.
 This data service provides the dates of Ash Wednesday, Palm Sunday, Good Friday, Easter, Ascension Day, Whit Sunday, Trinity Sunday, and the First Sunday of Advent in a given year. Data will be provided for the years 1583 through 9999. More information about this application may be found here
 
 #### EXAMPLE:
-`my $request = $webAgent.observancesChristan( :year(2017) );`
+`say $webAgent.observancesChristan( Date.today.year() );`
+
 #### Return:
 This method returns a JSON formatted text blob.
 
@@ -103,7 +104,8 @@ This method returns a JSON formatted text blob.
 This data service provides the dates for Rosh Hashanah (Jewish New Year), Yom Kippur (Day of Atonement), first day of Succoth (Feast of Tabernacles), Hanukkah (Festival of Lights), first day of Pesach (Passover), and Shavuot (Feast of Weeks) in a given year. Data will be provided for the years 360 C.E. (A.M. 4120) through 9999 C.E. (A.M. 13761).
 
 #### EXAMPLE:
-`my $request = $webAgent.observancesJewish( :year(2017) );`
+`say $webAgent.observancesJewish( Date.today.year() );`
+
 #### Return:
 This method returns a JSON formatted text blob.
 
@@ -113,7 +115,7 @@ This data service provides the dates for Islamic New Year, the first day of Rama
 The `.observancesIslamic` method takes one argument called year, which should be a unsigned integer in the range of 622 to 9999.
 
 #### EXAMPLE:
-`my $request = $webAgent.observancesIslamic( :year(2017) );`
+`say $webAgent.observancesIslamic( Date.today.year() );`
 
 #### Return:
 This method returns a JSON formatted text blob.
@@ -129,11 +131,12 @@ This method returns a JSON text blob of the request converted into ether a Julia
 
 #### EXAMPLES:
 
-`my $request = $webAgent.julianDate( 2457892.312674 );`
+`say $webAgent.julianDate( 2457892.312674 );`
 
-`my $request = $webAgent.julianDate( DateTime.now, 'AD');`
+`say $webAgent.julianDate( :dateTimeObj(DateTime.now), :era('AD'));`
+
 #### Return:
-This method returns a JSON formatted text blob.
+Both of these methods returns an JSON formatted text blob.
 
 
 ## Returns
@@ -153,7 +156,23 @@ say $output;
 ```
 OUTPUT:
 ```
-SOME TEXT HERE...
+{
+"error":false,
+"apiversion":"2.2.0",
+"data":[
+      {
+         "jd": 2457892.312674,
+         "month": 5,
+         "day": 18,
+         "year": 2017,
+         "era": "A.D.",
+         "time": "19:30:15.0",
+         "tz": 0,
+         "dayofweek" : "Thursday"
+      }
+   ]
+}
+
 ```
 
 ## AUTHOR

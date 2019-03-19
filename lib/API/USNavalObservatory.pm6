@@ -8,7 +8,7 @@ use v6;
 unit class API::USNavalObservatory;
 use HTTP::UserAgent;
 use URI::Encode;
-use WWW;
+#use WWW;
 
 my $baseURL = 'api.usno.navy.mil/';
 ## Dont think I need this ether: my @validEras = "AD", "CE", "BC", "BCE";
@@ -152,10 +152,11 @@ try {
 
 ## TODO need to have some input checking for coords, and intvUnit.
 multi method siderealTime( DateTime :$dateTimeObj, :$coords, UInt :$reps, UInt :$intvMag, :$intvUnit ) {
+
   try {
       if $coords !~~ / <coords> / { die; }
       if $dateTimeObj < Date.today.later(year => -1) or $dateTimeObj > Date.today.later(year => 1)  { die; }
-      if $intvUnit !~~ /[1..4] | ['day' | 'hour' | 'minuet' | 'second'] /  { die; }
+      if $intvUnit !~~ /[1..4] | ['day' | 'hour' | 'minute' | 'second'] /  { die; }
       CATCH { say 'Invalid data passed!'; }
   }
 
@@ -165,17 +166,13 @@ multi method siderealTime( DateTime :$dateTimeObj, :$coords, UInt :$reps, UInt :
   return self!getJSON( $template );
 }
 
-###########################################
-## Solar eclipses calculator
-multi method solarEclipses( SolarEclipses-YEAR :$year ) {
-  my $template = "eclipses/solar?year={ $year }";
-  return self!getJSON( $template );
-}
+
 
 ###########################################
 ## Solar eclipses calculator
 ## TODO Get Location type working...
 multi method solarEclipses( Date :$dateObj, :$loc, Height :$height, Format :$format  ) {
+  #dd $dateObj; exit;
   my $date = "{ $dateObj.month }/{ $dateObj.day }/{ $dateObj.year }";
   my $template = "eclipses/solar?date={ $date }&loc={ $loc }&height={ $height }&format={ $format }";
   return self!getJSON( $template );
@@ -195,8 +192,15 @@ multi method solarEclipses( Date :$dateObj, :$coords, Height :$height, Format :$
 }
 
 ###########################################
+## Solar eclipses calculator
+multi method solarEclipses( SolarEclipses-YEAR :$year ) {
+  my $template = "eclipses/solar?year={ $year }";
+  return self!getJSON( $template );
+}
+
+###########################################
 ## Selected Christian observances
-method observancesChristan( ObserChristan :$year ) {
+method observancesChristan( ObserChristan $year ) {
   #if $year != any( 1583...9999 ) { return "ERROR!! Invalid year. (only use 1583 to 9999)"; }
   my $template = "christian?year={ $year }";
   return self!getJSON( $template );
@@ -204,7 +208,7 @@ method observancesChristan( ObserChristan :$year ) {
 
 ###########################################
 ## Selected Jewish observances
-method observancesJewish( ObserJewish :$year ) {
+method observancesJewish( ObserJewish $year ) {
   #if $year != any( 622...9999 ) { return "ERROR!! Invalid year. (only use 622 to 9999)"; }
   my $template = "jewish?year={ $year }";
   return self!getJSON( $template );
@@ -212,7 +216,7 @@ method observancesJewish( ObserJewish :$year ) {
 
 ###########################################
 ## Selected Islamic observances
-method observancesIslamic( ObserIslamic :$year ) {
+method observancesIslamic( ObserIslamic $year ) {
   #if $year != any( 360...9999 ) { return "ERROR!! Invalid year. (only use 360 to 9999)"; }
   my $template = "islamic?year={ $year }";
   return self!getJSON( $template );
@@ -230,7 +234,7 @@ multi method julianDate( DateTime :$dateTimeObj, ValidEras :$era ) {
 
 ###########################################
 ## Julian date converter - From julian date to calender date.
-multi method julianDate( ValidJulian :$julian ) {
+multi method julianDate(  $julian ) {
   #if $julian < 0 or $julian > 5373484.5 { return "ERROR!! Julian date. (only use 0 to 5373484.5 )"; }
   my $template = "jdconverter?jd={ $julian }";
   return self!getJSON( $template );
