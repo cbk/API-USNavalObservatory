@@ -103,7 +103,9 @@ All these method signatures return an JSON formatted text blob.
 This data service provides the dates of Ash Wednesday, Palm Sunday, Good Friday, Easter, Ascension Day, Whit Sunday, Trinity Sunday, and the First Sunday of Advent in a given year. Data will be provided for the years 1583 through 9999. More information about this application may be found here
 
 #### EXAMPLE:
-`say $webAgent.observancesChristan( Date.today.year() );`
+```
+say $webAgent.observancesChristan( Date.today.year() );
+```
 
 #### Return:
 This method returns a JSON formatted text blob.
@@ -112,7 +114,9 @@ This method returns a JSON formatted text blob.
 This data service provides the dates for Rosh Hashanah (Jewish New Year), Yom Kippur (Day of Atonement), first day of Succoth (Feast of Tabernacles), Hanukkah (Festival of Lights), first day of Pesach (Passover), and Shavuot (Feast of Weeks) in a given year. Data will be provided for the years 360 C.E. (A.M. 4120) through 9999 C.E. (A.M. 13761).
 
 #### EXAMPLE:
-`say $webAgent.observancesJewish( Date.today.year() );`
+```
+say $webAgent.observancesJewish( Date.today.year() );
+```
 
 #### Return:
 This method returns a JSON formatted text blob.
@@ -123,7 +127,9 @@ This data service provides the dates for Islamic New Year, the first day of Rama
 The `.observancesIslamic` method takes one argument called year, which should be a unsigned integer in the range of 622 to 9999.
 
 #### EXAMPLE:
-`say $webAgent.observancesIslamic( Date.today.year() );`
+```
+say $webAgent.observancesIslamic( Date.today.year() );
+```
 
 #### Return:
 This method returns a JSON formatted text blob.
