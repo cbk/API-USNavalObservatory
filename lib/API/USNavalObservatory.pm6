@@ -8,7 +8,8 @@ use v6;
 unit class API::USNavalObservatory;
 use HTTP::UserAgent;
 use URI::Encode;
-#use WWW;
+use WWW;
+use URI;
 
 my $baseURL = 'api.usno.navy.mil/';
 ## Dont think I need this ether: my @validEras = "AD", "CE", "BC", "BCE";
@@ -29,13 +30,28 @@ subset Format of Str where * eq any( "json", "gojson" );
 subset MoonPhase of UInt where * eq any( 1..99 );
 subset View of Str where * eq any( "moon", "sun", "north", "south", "east", "west", "rise", "set" );
 
-my regex coords { \-? \d+[\.\d+]? [N|S]? \,\s \-? \d+[\.\d+]? [E|W]? };
+my regex coords { \-? \d+[\.\d+]? [N|S]? \,?\s? \-? \d+[\.\d+]? [E|W]? };
 my regex loc { ['St.' || <alpha> ]? \s? <alpha>+ \, \s \w**2 };
 
 ###########################################
 ## getJSON - method used to make request which will return JSON formatted data.
 method !getJSON( $template ) {
-  my $URI = uri_encode( $baseURL ~ $template ~ "&id={ $apiID }" );
+say $template;
+
+my $test = "http://api.usno.navy.mil/eclipses/solar?date=7/2/2019&coords=46.67N, 1.48E&height=176&format=json";
+#say $test;
+#my URI $URI .= new( "https://" ~ $baseURL ~ $template ~ "&id={ $apiID }");
+my URI $URI .= new( $test );
+
+# exit;
+
+#my $URI = uri_encode( $baseURL ~ $template ~ "&id={ $apiID }" );
+#my $URI = uri_encode( $test );
+  #say $URI; ## Used for testing URI bug.
+
+  say "Sending: " ~ $URI;
+  #my $response = get $URI;
+#exit;
   my $response = $webAgent.get( $URI );
   if $response.is-success {
     return $response.content;
@@ -171,29 +187,31 @@ multi method siderealTime( DateTime :$dateTimeObj, :$coords, UInt :$reps, UInt :
 ###########################################
 ## Solar eclipses calculator
 ## TODO Get Location type working...
-multi method solarEclipses( Date :$dateObj, :$loc, Height :$height, Format :$format  ) {
+multi method solarEclipses-loc( Date :$dateObj, :$loc, Height :$height, Format :$format  ) {
   #dd $dateObj; exit;
   my $date = "{ $dateObj.month }/{ $dateObj.day }/{ $dateObj.year }";
   my $template = "eclipses/solar?date={ $date }&loc={ $loc }&height={ $height }&format={ $format }";
+  say $template; exit;
   return self!getJSON( $template );
 }
 
 ###########################################
 ## Solar eclipses calculator
 # TODO get Coords type working...
-multi method solarEclipses( Date :$dateObj, :$coords, Height :$height, Format :$format  ) {
+multi method solarEclipses-coords( Date :$dateObj, :$coords, Height :$height, Format :$format  ) {
   try {
     if $coords !~~ / <coords> / { die };
       CATCH { say "Invalid coords passed!"; }
   }
   my $date = "{ $dateObj.month }/{ $dateObj.day }/{ $dateObj.year }";
   my $template = "eclipses/solar?date={ $date }&coords={ $coords }&height={ $height }&format={ $format }";
+  #say $template; exit;
   return self!getJSON( $template );
 }
 
 ###########################################
 ## Solar eclipses calculator
-multi method solarEclipses( SolarEclipses-YEAR :$year ) {
+multi method solarEclipses( SolarEclipses-YEAR $year ) {
   my $template = "eclipses/solar?year={ $year }";
   return self!getJSON( $template );
 }
@@ -239,3 +257,18 @@ multi method julianDate(  $julian ) {
   my $template = "jdconverter?jd={ $julian }";
   return self!getJSON( $template );
 }
+
+###########################################
+## Earth's Seasons and Apsides
+# Data will be provided for the years 1700 through 2100.
+# Time zone must be in the range -12 (west) ≤ TZ ≤ +14 (east).
+multi method seasons( UInt :$year, Int :$tz?, Bool :$dst? ) {
+    my $template;
+    if $year ~~ 1700..2100 { $template = "seasons?year={$year}"; } else { say "Not a valid range for year."; die; }
+    if $tz ~~ -12..14 { $template ~= "&tz={$tz}"; } else { say "Not a valid range for time zone."; die; }
+    if $dst { $template ~= "&dst={$dst}"; }
+    # say $template; exit;
+    return self!getJSON( $template );
+}
+
+

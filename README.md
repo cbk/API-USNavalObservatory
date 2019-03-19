@@ -1,16 +1,21 @@
 # perl6-API-USNavalObservatory [![Build Status](https://travis-ci.org/cbk/API-USNavalObservatory.svg?branch=master)](https://travis-ci.org/cbk/API-USNavalObservatory)
 
 ## SYNOPSIS
-Simple Perl 6 interface to the U.S. Naval Observatory, Astronomical Applications API v2.0.1
+Simple Perl 6 interface to the U.S. Naval Observatory, Astronomical Applications API v2.2.0
 which can be found at http://aa.usno.navy.mil/data/docs/api.php
 
 You may choose  to use an 8 character alphanumeric identifier in your forms or scripts.  This API has a default of 'P6mod' which is registered with the U.S. Naval Observatory as the default ID of this API.  The 'AA' ID is used internally by the U.S. Naval Observatory and thus can not be used.
-You may use any other identifier you want to ID
+You may use any other identifier you want for apiID.
 #### EXAMPLE:
 the following example creates a new API::NavalObservatory object called $webAgent and sets the apiID to 'MyID'.
 ```
 my $webAgent = API::USNavalObservatory.new( apiID => "MyID" );
 ```
+
+
+## Returns
+* For services which return text, you will receive an JSON formatted blob of text.
+* For services which produce a image, this API will save the .PNG file in the current working directory.
 
 ## Methods
 
@@ -68,8 +73,9 @@ This method returns a JSON formatted text blob.
 ### Solar Eclipse Calculator
 This data service provides local circumstances for solar eclipses, and also provides a means for determining dates and types of eclipses in a given year.
 
-#### EXAMPLE:
+#### EXAMPLES:
 The following example shows a request using a U.S. based location (San Francisco CA) for the current day.
+* NOTE: Currently this module utilizes the URI::Encode, uri_encode method. Including a comma **,** in the string that is passed to uri_encode seams to produce a malformed URL which fails when passed to the API. Use a space instead of a comma for now.
 
 ```
 say $webAgent.solarEclipses(
@@ -79,17 +85,19 @@ say $webAgent.solarEclipses(
 	:format("json") );
 ```
 The following example shows a request using lat and long.
-
 ```
-my $request = $webAgent.solarEclipses(
-	:loc("San Francisco, CA"),
-	:dateTimeObj($dateTimeData),
+say $webAgent.solarEclipses(
+	:coords(),
+	:dateObj( Date.today() ),
 	:height(50),
 	:format("json") );
 ```
-
+The following example shows a request providing only the year in the range of 1800 to 2050.
+```
+say $webAgent.solarEclipses( 2019 );
+```
 #### Return:
-This method returns a JSON formatted text blob.
+All these method signatures return an JSON formatted text blob.
 
 ### Selected Christian Observances
 This data service provides the dates of Ash Wednesday, Palm Sunday, Good Friday, Easter, Ascension Day, Whit Sunday, Trinity Sunday, and the First Sunday of Advent in a given year. Data will be provided for the years 1583 through 9999. More information about this application may be found here
@@ -130,20 +138,27 @@ This method returns a JSON text blob of the request converted into ether a Julia
 
 
 #### EXAMPLES:
+```
+say $webAgent.julianDate( 2457892.312674 );
+```
 
-`say $webAgent.julianDate( 2457892.312674 );`
-
-`say $webAgent.julianDate( :dateTimeObj(DateTime.now), :era('AD'));`
+```
+say $webAgent.julianDate( :dateTimeObj(DateTime.now), :era('AD'));
+```
 
 #### Return:
 Both of these methods returns an JSON formatted text blob.
 
+### Earth's Seasons and Apsides
+#### EXAMPLE:
+```
+say $webAgent.seasons( :year(2019), :tz(-6), :dst(False) );
+```
+#### Return:
+This method returns a JSON formatted text blob.
 
-## Returns
-* For services which return text, you will receive an JSON formatted blob of text.
-* For services which produce a image, this API will save the .PNG file in the current working directory.
 
-## Example
+## Sample code
 * The following example makes a new object and overrides the default apiID. Then calls the Julian date converter method to find the converted Julian date.
 
 ```
@@ -172,7 +187,6 @@ OUTPUT:
       }
    ]
 }
-
 ```
 
 ## AUTHOR
