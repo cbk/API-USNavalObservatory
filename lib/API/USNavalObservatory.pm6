@@ -2,20 +2,19 @@
 ## Michael D. Hensley
 ## May 13, 2017
 ## Perl 6 module use to easily interface with the U.S. Naval Observatory's Astronomical Applications API.
-## Currently based on the 2.0.1 version of the API.
+## Currently based on the 2.2.0 version of the API.
 use v6;
 
 unit class API::USNavalObservatory;
-use HTTP::UserAgent;
-use URI::Encode;
-use WWW;
 use URI;
+use Cro::HTTP::Client;
+use JSON::Pretty;
 
 my $baseURL = 'api.usno.navy.mil/';
 ## Dont think I need this ether: my @validEras = "AD", "CE", "BC", "BCE";
 my $apiID = 'P6mod'; # Default ID, feel free to use an ID of your own and  override.
 my $outputDir = $*CWD; # Current working Dir is the default output dir for images
-my $webAgent = HTTP::UserAgent.new();
+# my $webAgent = HTTP::UserAgent.new();
 ## Removing this because I don't think I need it, but will keep it around for now: my $encoded = URI::Encode.new();
 
 subset SolarEclipses-YEAR of UInt where * eq any( 1800..2050 );
@@ -36,29 +35,10 @@ my regex loc { ['St.' || <alpha> ]? \s? <alpha>+ \, \s \w**2 };
 ###########################################
 ## getJSON - method used to make request which will return JSON formatted data.
 method !getJSON( $template ) {
-say $template;
-
-my $test = "http://api.usno.navy.mil/eclipses/solar?date=7/2/2019&coords=46.67N, 1.48E&height=176&format=json";
-#say $test;
-#my URI $URI .= new( "https://" ~ $baseURL ~ $template ~ "&id={ $apiID }");
-my URI $URI .= new( $test );
-
-# exit;
-
-#my $URI = uri_encode( $baseURL ~ $template ~ "&id={ $apiID }" );
-#my $URI = uri_encode( $test );
-  #say $URI; ## Used for testing URI bug.
-
-  say "Sending: " ~ $URI;
-  #my $response = get $URI;
-#exit;
-  my $response = $webAgent.get( $URI );
-  if $response.is-success {
-    return $response.content;
-    }
-    else {
-      return $response.status-line;
-  }
+    my URI $URI .= new( "https://" ~ $baseURL ~ $template ~ "&id={ $apiID }");
+    my $request = await Cro::HTTP::Client.get( $URI );
+    my $response = await $request.body;
+    return to-json $response;
 }
 ###########################################
 ## getIMG - method used to make request which will return .png files.
