@@ -11,11 +11,8 @@ use Cro::HTTP::Client;
 use JSON::Pretty;
 
 my $baseURL = 'api.usno.navy.mil/';
-## Dont think I need this ether: my @validEras = "AD", "CE", "BC", "BCE";
 my $apiID = 'P6mod'; # Default ID, feel free to use an ID of your own and  override.
 my $outputDir = $*CWD; # Current working Dir is the default output dir for images
-# my $webAgent = HTTP::UserAgent.new();
-## Removing this because I don't think I need it, but will keep it around for now: my $encoded = URI::Encode.new();
 
 subset SolarEclipses-YEAR of UInt where * eq any( 1800..2050 );
 subset ValidEras of Str where * eq any( "AD", "CE", "BC", "BCE" );
@@ -30,12 +27,13 @@ subset MoonPhase of UInt where * eq any( 1..99 );
 subset View of Str where * eq any( "moon", "sun", "north", "south", "east", "west", "rise", "set" );
 
 my regex coords { \-? \d+[\.\d+]? [N|S]? \,?\s? \-? \d+[\.\d+]? [E|W]? };
-my regex loc { ['St.' || <alpha> ]? \s? <alpha>+ \, \s \w**2 };
+my regex loc { ['St.' || <alpha> ]? \s? <alpha>+ \, \s? \w**2 };
 
 ###########################################
 ## getJSON - method used to make request which will return JSON formatted data.
 method !getJSON( $template ) {
-    my URI $URI .= new( "https://" ~ $baseURL ~ $template ~ "&id={ $apiID }");
+    my $encode_template = $template; $encode_template ~~ s:global/\s/%20/;
+    my URI $URI .= new( "https://" ~ $baseURL ~ $encode_template ~ "&id={ $apiID }");
     my $request = await Cro::HTTP::Client.get( $URI );
     my $response = await $request.body;
     return to-json $response;
@@ -45,9 +43,12 @@ method !getJSON( $template ) {
 ## TODO: change the default location of the base directory
 method !getIMG( :$name, :$template ){
   my $file = $outputDir ~ "/"~ $name ~ ".png";
-  my $url = $baseURL ~ $template;
-  say "Saving to $file ";
-  $file.IO.spurt: :bin, get $url;
+  my $encode_template = $template; $encode_template ~~ s:global/\s/%20/;
+  my URI $URI .= new( "https://" ~ $baseURL ~ $encode_template ~ "&id={ $apiID }");
+  say "Saving to $file";
+  my $request = await Cro::HTTP::Client.get( $URI );
+  my Blob $responseIMG = await $request.body-blob();
+  $file.IO.spurt: :bin, $responseIMG;
   say "{($file.path.s / 1024).fmt("%.1f")} KB received";
 }
 
@@ -80,9 +81,9 @@ method dayAndNight-Spherical( Date :$dateObj, View :$view ) {
 
 ###########################################
 ## Apparent disk of a solar system object.
-method apparentDisk( DateTime :$dateTimeObj, Body :$body ){
+method apparentDisk( DateTime :$dateTimeObj!, :$body ){
   my $date = "{ $dateTimeObj.month }/{ $dateTimeObj.day }/{ $dateTimeObj.year }";
-  my $time = "{$dateTimeObj.hour}:{$dateTimeObj.minute}:{$dateTimeObj.second}";
+  my $time = $dateTimeObj.hh-mm-ss;
   my $template = "imagery/{ $body }.png?date={ $date }&time={ $time }";
   self!getIMG( :name( $body ), :template($template)  );
 }
@@ -95,7 +96,7 @@ multi method moonPhase( Date :$dateObj, MoonPhase :$numP  ){
   return self!getJSON( $template );
 }
 
-multi method moonPhase( UInt :$year where * eq any( 1700 ..2100 )){
+multi method moonPhase( UInt $year where * eq any( 1700 ..2100 )){
   # 1700 and 2100 are the only valid years which can be used.
   my $template = "moon/phase?year={ $year }";
   return self!getJSON( $template );
@@ -103,20 +104,20 @@ multi method moonPhase( UInt :$year where * eq any( 1700 ..2100 )){
 
 ###########################################
 ## Complete sun and mood data for one day by lat and long.
-multi method oneDayData-latlong( DateTime :$dateTimeObj, Str :$coords  ) {
+multi method oneDayData( Date :$dateObj, :$coords, :$tz ) {
   try {
     if $coords !~~ / <coords> / { die; }
       CATCH { say 'Invalid coords passed!'; }
   }
-  my $date = "{ $dateTimeObj.month }/{ $dateTimeObj.day }/{ $dateTimeObj.year }";
-  my $tz = $dateTimeObj.timezone / 3600;
+  my $date = "{ $dateObj.month }/{ $dateObj.day }/{ $dateObj.year }";
+  #my $tz = $dateTimeObj.timezone / 3600; ## This was used if a date time object was passed
   my $template = "rstt/oneday?date={ $date }&coords={ $coords }&tz={ $tz }";
   say self!getJSON( $template );
 }
 
 ###########################################
 ## Complete sun and mood data for one day by location.
-multi method oneDayData-location( Date :$dateObj, Str :$loc ) {
+multi method oneDayData( Date :$dateObj!, Str :$loc ) {
   try {
     if $loc !~~ / <loc> / { die; }
     CATCH { say 'Invalid location passed!'; }
@@ -130,39 +131,33 @@ multi method oneDayData-location( Date :$dateObj, Str :$loc ) {
 ## Sidereal Time
 ## TODO need to check if date is within 1 year past or 1 year in the future, range. DONE!!
 ## TODO need to have some input checking for $intvUnit; can be 1 - 4 or a string. DONE!!
-multi method siderealTime( DateTime :$dateTimeObj, Str :$loc, UInt :$reps, UInt :$intvMag, :$intvUnit ) {
+multi method siderealTime( DateTime :$dateTimeObj, Str :$loc!, UInt :$reps, UInt :$intvMag, :$intvUnit ) {
     try {
         if $loc !~~ / <loc> / { die; } ## Check if the location value matches a valid pattern.
-        if $dateTimeObj < Date.today.later(year => -1) or $dateTimeObj > Date.today.later(year => 1)  { die; }
-        if $intvUnit !~~ /[1..4] | ['day' | 'hour' | 'minuet' | 'second'] /  { die; }
+        if $dateTimeObj.Date < Date.today.earlier(year => 1) or $dateTimeObj.Date > Date.today.later(year => 1)  { die; }
+        if $intvUnit !~~ /[1..4] | ['day' | 'hour' | 'minute' | 'second'] /  { die; }
         CATCH { say 'Invalid data passed!'; }
     }
-
-
     my $date = "{ $dateTimeObj.month }/{ $dateTimeObj.day }/{ $dateTimeObj.year }";
-    my $time = "{$dateTimeObj.hour}:{$dateTimeObj.minute}:{$dateTimeObj.second}";
-    
+    my $time = $dateTimeObj.hh-mm-ss;
     my $template = "sidtime?date={ $date }&time={ $time }&loc={ $loc }&reps={ $reps }&intv_mag={ $intvMag }&intv_unit={ $intvUnit }";
+
     return self!getJSON( $template );
 }
 
 ## TODO need to have some input checking for coords, and intvUnit.
 multi method siderealTime( DateTime :$dateTimeObj, :$coords, UInt :$reps, UInt :$intvMag, :$intvUnit ) {
-
   try {
       if $coords !~~ / <coords> / { die; }
-      if $dateTimeObj < Date.today.later(year => -1) or $dateTimeObj > Date.today.later(year => 1)  { die; }
+      if $dateTimeObj.Date < Date.today.earlier(year => 1) or $dateTimeObj.Date > Date.today.later(year => 1)  { die; }
       if $intvUnit !~~ /[1..4] | ['day' | 'hour' | 'minute' | 'second'] /  { die; }
       CATCH { say 'Invalid data passed!'; }
   }
-
   my $date = "{ $dateTimeObj.month }/{ $dateTimeObj.day }/{ $dateTimeObj.year }";
-  my $time = "{$dateTimeObj.hour}:{$dateTimeObj.minute}:{$dateTimeObj.second}";
+  my $time = $dateTimeObj.hh-mm-ss;
   my $template = "sidtime?date={ $date }&time={ $time }&coords={ $coords }&reps={ $reps }&intv_mag={ $intvMag }&intv_unit={ $intvUnit }";
   return self!getJSON( $template );
 }
-
-
 
 ###########################################
 ## Solar eclipses calculator

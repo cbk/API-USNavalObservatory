@@ -23,47 +23,103 @@ my $webAgent = API::USNavalObservatory.new( apiID => "MyID" );
 #### EXAMPLE:
 #### Return:
 
-### Day and Night Across the Earth - Spherical Projection
-#### EXAMPLE:
-#### Return:
-
-### Day and Night Across the Earth - Cylindrical Projection
-#### EXAMPLE:
-#### Return:
-
 ### Day and Night Across the Earth - Spherical Projections
 #### EXAMPLE:
 #### Return:
 This method returns a JSON formatted text blob.
 
 ### Apparent Disk of a Solar System Object
+Produces an apparent disk of a solar system object oriented as if you were viewing it through a high-powered telescope.
+
 #### EXAMPLE:
+```
+ say $webAgent.apparentDisk(
+	:dateTimeObj( DateTime.now ),
+	:body('moon')
+);
+```
+
 #### Return:
-This method returns a JSON formatted text blob.
+This method returns a png image in the current working directory. 
 
 ### Phases of the Moon
-#### EXAMPLE:
+Returns the dates and times of a list of primary moon phases.
+
+#### EXAMPLES:
+The following example shows a request for a given date and number of phases.
+```
+say $webAgent.moonPhase(
+	:dateObj( Date.today() ),
+	:numP( 5 )
+);
+```
+The following example shows a request for a given year.
+```
+ say $webAgent.moonPhase( 2019 );
+ ```
+
 #### Return:
 This method returns a JSON formatted text blob.
 
 ### Complete Sun and Moon Data for One Day
-#### EXAMPLE:
+Returns the rise, set, and transit times for the Sun and the Moon on the requested date at the specified location.
+
+#### EXAMPLES:
+The following example shows a request using date, coordinates, and time zone.
+```
+say $webAgent.oneDayData(
+	:dateObj( Date.today() ),
+	:coords( "41.98N, 12.48E" ),
+	:tz(-6)
+);
+```
+The following example shows a request using date amd location.
+```
+say $webAgent.oneDayData(
+	:dateObj( Date.today()),
+	:loc("San Diego, CA")
+);
+```
 #### Return:
 This method returns a JSON formatted text blob.
+
+
 
 ### Sidereal Time
 Provides the greenwich mean and apparent sidereal time, local mean and apparent sidereal time, and the Equation of the Equinoxes for a given date & time.
 
-
-#### EXAMPLE:
-
+#### EXAMPLES:
+The following example shows a request using a location string.
 ```
-my $request = $webAgent.siderealTime(
-	:dateTimeObj($dateTimeData),
-	:coords('41.98N, 12.48E'),
+say $webAgent.siderealTime(
+	:dateTimeObj(DateTime.new(
+                    year => 2019,
+                    month => 2,
+                    day => 2,
+                    hour => 2,
+                    minute => 2,
+                    second => 1,) ),
+	:loc("Denver,CO"),
 	:reps(90),
 	:intvMag(5),
-	:intvMag('minutes')
+	:intvUnit('minutes')
+);
+```
+
+The following example shows a request using coordinates. 
+```
+say $webAgent.siderealTime-coords(
+	:dateTimeObj( DateTime.new(
+                    year => 2019,
+                    month => 2,
+                    day => 2,
+                    hour => 2,
+                    minute => 2,
+                    second => 1,) ),
+	:coords("41.98N, 12.48E"),
+	:reps(90),
+	:intvMag(5),
+	:intvUnit('minutes')
 );
 ```
 
@@ -87,7 +143,7 @@ say $webAgent.solarEclipses(
 The following example shows a request using lat and long.
 ```
 say $webAgent.solarEclipses(
-	:coords(),
+	:coords("46.67N, 1.48E" ),
 	:dateObj( Date.today() ),
 	:height(50),
 	:format("json") );
