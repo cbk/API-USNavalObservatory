@@ -45,7 +45,6 @@ method !getIMG( :$name, :$template ){
   my $file = $outputDir ~ "/"~ $name ~ ".png";
   my $encode_template = $template; $encode_template ~~ s:global/\s/%20/;
   my URI $URI .= new( "https://" ~ $baseURL ~ $encode_template ~ "&id={ $apiID }");
-  #say $URI; exit;
   say "Saving to $file";
   my $request = await Cro::HTTP::Client.get( $URI );
   my Blob $responseIMG = await $request.body-blob();
@@ -128,8 +127,6 @@ multi method oneDayData( Date :$dateObj!, Str :$loc ) {
 
 ###########################################
 ## Sidereal Time
-## TODO need to check if date is within 1 year past or 1 year in the future, range. DONE!!
-## TODO need to have some input checking for $intvUnit; can be 1 - 4 or a string. DONE!!
 multi method siderealTime( DateTime :$dateTimeObj, Str :$loc!, UInt :$reps, UInt :$intvMag, :$intvUnit ) {
     try {
         if $loc !~~ / <loc> / { die; } ## Check if the location value matches a valid pattern.
