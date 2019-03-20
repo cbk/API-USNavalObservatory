@@ -12,21 +12,59 @@ the following example creates a new API::NavalObservatory object called $webAgen
 my $webAgent = API::USNavalObservatory.new( apiID => "MyID" );
 ```
 
-
 ## Returns
 * For services which return text, you will receive an JSON formatted blob of text.
 * For services which produce a image, this API will save the .PNG file in the current working directory.
 
 ## Methods
+There are currently 9 methods which are used to interact with this API.  Three of these, the methods relating to religious observances have been combined into one method.  Those three will be deprecated at a latter date.
+
+The API uses UTC time for all time based calls.  When crafting your method calls add the `.utc` method on the DateTime object to convert a local time to UTC.
+
+Below is a list of the current method in this moduel:
+* Day and Night Across the Earth, Cylindrical Projection: `.cylindrical()`
+* Day and Night Across the Earth, Spherical Projection:  `.spherical()`
+* Apparent Disk of the Solar System Object: `.apparentDisk()`
+* Phases of the Moon: `.moonPhase()`
+* Compleate Sun and Mood Data for One Day: `.oneDayData()`
+* Sidereal Time: `.siderealTime()`
+* Solar Eclipse Calculator: `.solarEclipses()`
+* Religious Observances: `.observances()`
+* Earth Seasons and Apsides: `.seasons()`
+
+
 
 ### Day and Night Across the Earth - Cylindrical Projection
-#### EXAMPLE:
+This program generates a cylindrical map of the Earth (similar to a Mercator projection) with daytime and nighttime areas appropriately shaded. 
+#### EXAMPLES:
+The following example shows a request using a date only.
+
+```
+say $webAgent.cylindrical( :dateObj( Date.today  ) );
+```
+
+This example shows a request that uses both date and time.
+```
+say $webAgent.cylindrical( :dateTimeObj( DateTime.now ) );
+```
+
 #### Return:
+This method returns a png image in the current working directory.
 
 ### Day and Night Across the Earth - Spherical Projections
+Creates a .png image view of the Earth with daytime and nighttime areas shaded appropriately. The image generated is of the apparent disk you would see if you were in a spacecraft looking back at Earth.
+* The value for `view` can be any one of the following: moon, sun, north, south, east, west, rise, and set.
+
+
 #### EXAMPLE:
+```
+ say $webAgent.spherical(
+    :dateTimeObj( DateTime.now ),
+	:view("sun")
+);  ##WORKING
+```
 #### Return:
-This method returns a JSON formatted text blob.
+This method returns a .png image in the current working directory.
 
 ### Apparent Disk of a Solar System Object
 Produces an apparent disk of a solar system object oriented as if you were viewing it through a high-powered telescope.
@@ -155,6 +193,17 @@ say $webAgent.solarEclipses( 2019 );
 #### Return:
 All these method signatures return an JSON formatted text blob.
 
+
+### Selected Religious Observances
+single method to handle all three calender types.
+
+#### EXAMPLE:
+```
+say $webAgent.observances( :year(2022), :cal('christian') );
+```
+#### Return:
+This method returns a JSON formatted text blob.
+ 
 ### Selected Christian Observances
 This data service provides the dates of Ash Wednesday, Palm Sunday, Good Friday, Easter, Ascension Day, Whit Sunday, Trinity Sunday, and the First Sunday of Advent in a given year. Data will be provided for the years 1583 through 9999. More information about this application may be found here
 
