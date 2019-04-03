@@ -242,6 +242,7 @@ This method returns a JSON formatted text blob.
 ## Sample code
 * The following example makes a new object and overrides the default apiID. Then calls the solarEclipses method with the year 2019 to find all eclipses for 2019. 
 
+
 ```
 use v6;
 use API::USNavalObservatory;
