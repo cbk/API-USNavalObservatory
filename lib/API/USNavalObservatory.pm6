@@ -102,7 +102,7 @@ multi method moonPhase( UInt $year where * eq any( 1700 ..2100 )){
 
 ###########################################
 ## Complete sun and mood data for one day by lat and long.
-multi method oneDayData( Date :$dateObj, :$coords, :$tz ) {
+multi method oneDayData( Date :$dateObj, :$coords!, :$tz! ) {
   try {
     if $coords !~~ / <coords> / { die; }
       CATCH { say 'Invalid coords passed!'; }

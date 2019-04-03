@@ -240,7 +240,7 @@ This method returns a JSON formatted text blob.
 
 
 ## Sample code
-* The following example makes a new object and overrides the default apiID. Then calls the Julian date converter method to find the converted Julian date.
+* The following example makes a new object and overrides the default apiID. Then calls the solarEclipses method with the year 2019 to find all eclipses for 2019. 
 
 ```
 use v6;
